@@ -29,14 +29,14 @@ public class RedisClusterTest {
 	 
 	@Test
 	public void test() {
-		ZooKeeper zooKeeper = null;
-		try {
-			zooKeeper =new ZooKeeper("127.0.0.1:2183",2000,new ZookReConnectWatcher()  );
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
+//		ZooKeeper zooKeeper = null;
+//		try {
+//			zooKeeper =new ZooKeeper("127.0.0.1:2183",2000,new ZookReConnectWatcher()  );
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} 
 		//将redis服务器信息注册至zookeeper，并监听集群的状态
-		RegisterNode.register();
+	
 
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -51,6 +51,8 @@ public class RedisClusterTest {
 			States aa =zk.getState();
 			zk.create(path+sub,mapper.writeValueAsString(redisNodeBean).getBytes(),Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL_SEQUENTIAL);
 
+			RegisterNode.register();
+			
 			RedisNodeBean redisNodeBean1 =  new RedisNodeBean();
 			redisNodeBean1.setIp("127.0.0.1");
 			redisNodeBean1.setPort(6381);
@@ -82,7 +84,6 @@ public class RedisClusterTest {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

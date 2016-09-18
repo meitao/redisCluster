@@ -22,7 +22,7 @@ public class RegisterNode {
 
 	public static final String sub = RedisContext.getPropertie(RedisContext.redisNodePath);
 
-	public static volatile ZooKeeper zk = 	ZookConnect.getConnect() ;
+	public static  ZooKeeper zk = 	ZookConnect.getConnect() ;
 
 	public static void register(){
 
@@ -33,7 +33,7 @@ public class RegisterNode {
 			RedisNodeBean redisNodeBean =  new RedisNodeBean();
 
 			InetAddress addr = InetAddress.getLocalHost();
-			redisNodeBean.setIp("127.0.0.1");
+			redisNodeBean.setIp(addr.getHostAddress());
 			redisNodeBean.setPort(Integer.parseInt(RedisContext.getPropertie(RedisContext.redisPort)));
 			redisNodeBean.setMaster(false);
 

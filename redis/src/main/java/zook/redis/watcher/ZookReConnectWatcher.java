@@ -12,9 +12,14 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooKeeper.States;
 
 import zook.redis.connect.ZookConnect;
-
+/**
+ * 
+ * @author Administrator
+ *
+ */
 public class ZookReConnectWatcher implements Watcher{
-
+	
+	
 	// 监控所有被触发的事件
 	public void process(WatchedEvent event) { 
 	
@@ -30,11 +35,11 @@ public class ZookReConnectWatcher implements Watcher{
 				}
 				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		} 
 		System.out.println(" zooKeeper 已经触发了" + event.toString() + "事件！"); 
 
-	} 
+	}
+
 }
