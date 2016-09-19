@@ -7,20 +7,18 @@ import zook.redis.RedisContext;
 import zook.redis.connect.RedisConnect;
 
 public class PingRedis {
-
-	public static String heartPing(){
-		String ping = null ;
+	private static Jedis jedis ;
+	static {
 		try{
 			InetAddress addr  = InetAddress.getLocalHost();
-			Jedis jedis = RedisConnect.getConnect( addr.getHostAddress(),
+		    jedis = RedisConnect.getConnect( addr.getHostAddress(),
 					Integer.parseInt(RedisContext.getPropertie(RedisContext.redisPort)));
-		    ping = jedis.ping();
-//			System.out.println(" heartPing ----"+ping);
-			return ping ;
 		} catch(Exception e){
 			e.printStackTrace();
 		}
-		return  ping; 
 	}
 
+	public static String heartPing(){
+		return jedis.ping();
+	}
 }

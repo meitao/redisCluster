@@ -18,7 +18,6 @@ import zook.redis.Selection.SelectionMaster;
 import zook.redis.connect.ZookConnect;
 import zook.redis.register.RedisNodeBean;
 import zook.redis.register.RegisterNode;
-import zook.redis.watcher.ZookReConnectWatcher;
 
 public class RedisClusterTest {
 

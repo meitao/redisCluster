@@ -10,14 +10,15 @@ import org.apache.zookeeper.ZooKeeper;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import zook.redis.RedisContext;
 import zook.redis.Selection.SelectionMaster;
 import zook.redis.register.RedisNodeBean;
 
 public class ChildWatcher implements Watcher{
 
-//	public static final  String path = RedisContext.getPropertie(RedisContext.redisPath) ;
+	private static Logger log = LoggerFactory.getLogger(ChildWatcher.class);  
 	
 	private ZooKeeper zooKeeper ;
 
@@ -30,7 +31,7 @@ public class ChildWatcher implements Watcher{
 			boolean isSelectionMaster = true ;
 			List<String>  list = zooKeeper.getChildren(event.getPath(), this);
 			
-			System.out.println(" ChildWatcher 下的节点数"+list.toString() ); 
+			log.info(event.getPath()+"下的节点 >> "+list.toString() ); 
 			
 			ObjectMapper mapper = new ObjectMapper();
 			if(list.size()<=1){
@@ -48,18 +49,23 @@ public class ChildWatcher implements Watcher{
 			if(isSelectionMaster){
 				SelectionMaster.selection();
 			}
-		}catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (KeeperException e) {
+			log.error("KeeperException",e);
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			log.error("InterruptedException",e);
+			e.printStackTrace();
+		} catch (JsonParseException e) {
+			log.error("JsonParseException",e);
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			log.error("JsonMappingException",e);
+			e.printStackTrace();
+		} catch (IOException e) {
+			log.error("IOException",e);
 			e.printStackTrace();
 		}
-		System.out.println(" ChildWatcher 已经触发了" + event.toString() + "事件！"); 
+		log.info("触发事件 >>>" + event.toString() ); 
 
 	} 
 }

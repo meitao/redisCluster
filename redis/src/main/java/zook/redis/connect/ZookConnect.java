@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooKeeper.States;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import zook.redis.RedisContext;
 import zook.redis.watcher.ZookReConnectWatcher;
@@ -19,6 +18,8 @@ public class ZookConnect {
 	//	final static String[] zookIps ={"localhost:2181","localhost:2182","localhost:2183"};
 
 	//	private static List<ZooKeeper> sessionList = new ArrayList<ZooKeeper>();
+
+	private static Logger log = LoggerFactory.getLogger(ZookConnect.class);   
 
 	private final static Map<String,ZooKeeper> sessionPool = new ConcurrentHashMap<String,ZooKeeper>();
 
@@ -32,16 +33,17 @@ public class ZookConnect {
 				while(!zooKeeper.getState().equals(States.CONNECTED)&&i<100){
 					i++;
 					Thread.sleep(10);
-					System.out.println(" -------"+zooKeeper.getState());
+					log.info(" -------"+zooKeeper.getState());
 				}
 				sessionPool.put(ip,zooKeeper);
 			} catch (IOException e) {
 				e.printStackTrace();
+				log.error(" IOException : ",e);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				log.error(" InterruptedException : ",e);
 			}
-			System.out.println("创建zook-------");
+			log.info("创建zook-------");
 		}
 	}
 

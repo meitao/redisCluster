@@ -10,6 +10,8 @@ import org.apache.zookeeper.ZooKeeper;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import zook.redis.RedisContext;
 import zook.redis.connect.ZookConnect;
@@ -24,11 +26,15 @@ public class RegisterNode {
 
 	public static  ZooKeeper zk = 	ZookConnect.getConnect() ;
 
+	private static Logger log = LoggerFactory.getLogger(RegisterNode.class);   
+
 	public static void register(){
 
 		// 创建另外一个子目录节点
 		try {
-			System.out.println(zk.getChildren(path, new ChildWatcher(zk)));
+			log.info(" 开始为redis 注册 zookeeper节点 ");
+			
+			zk.getChildren(path, new ChildWatcher(zk)) ;
 			ObjectMapper mapper = new ObjectMapper();
 			RedisNodeBean redisNodeBean =  new RedisNodeBean();
 
@@ -38,17 +44,22 @@ public class RegisterNode {
 			redisNodeBean.setMaster(false);
 
 			zk.create(path+sub,mapper.writeValueAsString(redisNodeBean).getBytes(),Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL_SEQUENTIAL);
-		
+
 			monitor();
 		} catch (KeeperException e) {
+			log.error("KeeperException : ",e);
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			log.error("InterruptedException : ",e);
 			e.printStackTrace();
 		} catch (JsonGenerationException e) {
+			log.error("JsonGenerationException : ",e);
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
+			log.error("JsonMappingException : ",e);
 			e.printStackTrace();
 		} catch (IOException e) {
+			log.error("IOException : ",e);
 			e.printStackTrace();
 		}
 	}
@@ -56,7 +67,7 @@ public class RegisterNode {
 	 *  监听redis服务器运行状态(如果redis服务器down掉要删除redis在服务器上的临时节点)
 	 */
 	public static void monitor(){
-		
+		log.info("监听redis服务器运行状态---");
 		new Thread( new Runnable() {
 
 			@Override
@@ -81,6 +92,7 @@ public class RegisterNode {
 					try {
 						//删除临时节点
 						zk.delete(path+sub, 0);
+						log.info("删除zookeeper上临时节点>>"+path+sub);
 					} catch (InterruptedException e1) {
 						e1.printStackTrace();
 					} catch (KeeperException e1) {
