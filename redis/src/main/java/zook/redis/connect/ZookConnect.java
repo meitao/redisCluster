@@ -1,7 +1,7 @@
 package zook.redis.connect;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -11,22 +11,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import zook.redis.RedisContext;
+import zook.redis.loadBalance.LoadBalance;
+import zook.redis.loadBalance.RandomLoadBalance;
 import zook.redis.watcher.ZookReConnectWatcher;
 
 public class ZookConnect {
 
-	//	final static String[] zookIps ={"localhost:2181","localhost:2182","localhost:2183"};
-
-	//	private static List<ZooKeeper> sessionList = new ArrayList<ZooKeeper>();
 
 	private static Logger log = LoggerFactory.getLogger(ZookConnect.class);   
 
 	private final static Map<String,ZooKeeper> sessionPool = new ConcurrentHashMap<String,ZooKeeper>();
 
+	private  static LoadBalance loadBalance ;
+
 	static {
+		
 		String[] zookIps = RedisContext.getPropertie(RedisContext.zookeeperNode).split(",");
-		for(String ip : zookIps){
+		String  zookLoadWeight = RedisContext.getPropertie(RedisContext.zookLoadWeight);
+		
+		String[] loadWeights = null  ;
+		Map<String,Integer> param = new HashMap<String,Integer>();
+
+		if(zookLoadWeight!=null&&"".equals(zookLoadWeight)){
+			loadWeights = zookLoadWeight.split(",");
+		}
+		for(int j=0;j<zookIps.length;j++){
+			String ip = null ;
 			try {
+				ip = zookIps[j];
 				ZooKeeper zooKeeper = new ZooKeeper(ip,2000,new ZookReConnectWatcher());
 				//等待连接zookeeper 成功
 				int i = 0 ;
@@ -43,6 +55,11 @@ public class ZookConnect {
 				e.printStackTrace();
 				log.error(" InterruptedException : ",e);
 			}
+			for(int k=0;k<loadWeights.length;k++){
+				param.put(ip, Integer.valueOf(loadWeights[k]));
+			}
+			loadBalance = new  RandomLoadBalance(param);
+			
 			log.info("创建zook-------");
 		}
 	}
@@ -52,14 +69,19 @@ public class ZookConnect {
 	 * @return
 	 */
 	public static  ZooKeeper getConnect(){
+		
+		int i = 0 ;
+		ZooKeeper zk = null;
 
-		Collection<ZooKeeper> set =(Collection<ZooKeeper>) sessionPool.values();
-		for( ZooKeeper session :set){
-			if(session.getState().equals(States.CONNECTED)){
-				return session ;
+		while(i<sessionPool.size()){
+			i++;
+			zk = sessionPool.get(loadBalance.loadBalance());
+			if(zk.getState().equals(States.CONNECTED)){
+				break ;
 			}
 		}
-		return null;
+		 
+		return zk;
 	}
 
 

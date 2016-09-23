@@ -19,6 +19,8 @@ public class RedisContext {
 	
 	public static String zookeeperNode="zookeeperNode" ;
 	
+	public static String zookLoadWeight="zookLoadWeight";
+	
 	public static String redisPath="redisPath" ;
 	
 	public static String redisNodePath="redisNodePath" ;
@@ -55,7 +57,7 @@ public class RedisContext {
 	
 	
 	public static String getPropertie(String id){
-		return env.getProperty(id);
+		return env.getProperty(id) != null ? env.getProperty(id):"";
 	}
 
 }

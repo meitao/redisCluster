@@ -34,7 +34,7 @@ public class RegisterNode {
 		try {
 			log.info(" 开始为redis 注册 zookeeper节点 ");
 			
-			zk.getChildren(path, new ChildWatcher(zk)) ;
+//			zk.getChildren(path, new ChildWatcher(zk)) ;
 			ObjectMapper mapper = new ObjectMapper();
 			RedisNodeBean redisNodeBean =  new RedisNodeBean();
 

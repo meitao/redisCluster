@@ -17,6 +17,7 @@ import zook.redis.RedisContext;
 import zook.redis.connect.RedisConnect;
 import zook.redis.connect.ZookConnect;
 import zook.redis.register.RedisNodeBean;
+import zook.redis.watcher.ChildWatcher;
 
 public class SelectionMaster {
 
@@ -36,7 +37,7 @@ public class SelectionMaster {
 		// 创建另外一个子目录节点
 		try {
 
-			//zk.getChildren(path, new ChildWatcher(zk));
+			zk.getChildren(path, new ChildWatcher(zk));
 			ObjectMapper mapper = new ObjectMapper();
 			// 获取自增临时节点最早创建的znode
 			List<String> list = zk.getChildren(path, null);

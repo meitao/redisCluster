@@ -15,7 +15,11 @@ import org.slf4j.LoggerFactory;
 
 import zook.redis.Selection.SelectionMaster;
 import zook.redis.register.RedisNodeBean;
-
+/**
+ * 监听节点下子节点的变动
+ * @author meitao 
+ *
+ */
 public class ChildWatcher implements Watcher{
 
 	private static Logger log = LoggerFactory.getLogger(ChildWatcher.class);  
